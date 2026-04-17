@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>ALERTA: INTRUSIÓN DETECTADA</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+            color: #0F0;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            user-select: none;
+        }
+
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        .alert-box {
+            background-color: rgba(0, 0, 0, 0.95);
+            border: 2px solid red;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 50px red;
+            width: 90%;
+            max-width: 600px;
+            z-index: 100;
+        }
+
+        .alert-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: red;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        #extraction-log {
+            height: 200px;
+            background: #050505;
+            border: 1px solid #444;
+            margin: 15px 0;
+            padding: 10px;
+            font-size: 0.85em;
+            overflow-y: hidden;
+            text-align: left;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #222;
+            border: 1px solid red;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 30px;
+            background-color: red;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            font-weight: bold;
+        }
+
+        #btn-grupo {
+            display: none;
+            background-color: #25d366;
+            color: white;
+            padding: 15px 25px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 20px;
+            box-shadow: 0 0 15px #25d366;
+            display: none;
+        }
+        
+        .broma-msg { display: none; color: white; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrixCanvas"></canvas>
+
+    <div class="alert-box" id="box">
+        <div id="danger-header">
+            <div class="alert-title">¡ACCESO NO AUTORIZADO!</div>
+            <div style="color: white; font-weight: bold;">EXTRAYENDO CREDENCIALES BANCARIAS...</div>
+        </div>
+        
+        <div id="extraction-log"></div>
+
+        <div id="p-container" class="progress-container">
+            <div id="myBar" class="progress-bar">0%</div>
+        </div>
+
+        <div id="broma-content" class="broma-msg">
+            <h2 style="color: #0F0;">¡TRANQUILO(A), ES UNA BROMA!</h2>
+            <p>Tu dinero y tus redes están a salvo.</p>
+            <p style="color: yellow; font-weight: bold;">Pero únete a mi grupo para aprender más o la próxima vez será en serio:</p>
+            <br>
+            <a id="btn-link" href="https://chat.whatsapp.com/E6UZhymVHGtDBLIr1s9Ekg?mode=gi_t" target="_blank" style="background:#25d366; color:white; padding:15px; text-decoration:none; border-radius:5px; font-weight:bold;">ÚNETE AL GRUPO AQUÍ</a>
+        </div>
+    </div>
+
+    <script>
+        // MATRIX BACKGROUND
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const drops = Array(Math.floor(canvas.width/16)).fill(1);
+        function draw() {
+            ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "#0F0"; ctx.font = "16px monospace";
+            drops.forEach((y, i) => {
+                ctx.fillText(Math.floor(Math.random()*2), i*16, y*16);
+                if (y*16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(draw, 35);
+
+        // LOG PERSONALIZADO (BCP, YAPE, ETC)
+        const log = document.getElementById('extraction-log');
+        const items = [
+            "Buscando aplicaciones financieras...",
+            "¡YAPE DETECTADO! Extrayendo clave...",
+            "¡PLIN DETECTADO! Vulnerando número celular...",
+            "Accediendo a banca móvil BCP...",
+            "Obteniendo token digital INTERBANK...",
+            "Descargando lista de contactos...",
+            "Accediendo a Galería de fotos y videos...",
+            "Clonando sesión de WHATSAPP...",
+            "Extrayendo cookies de FACEBOOK...",
+            "Vulnerando INSTAGRAM y TIKTOK...",
+            "Acceso a TELEGRAM concedido.",
+            "Enviando copias de seguridad a servidor remoto...",
+            "Borrando rastro del sistema..."
+        ];
+        let i = 0;
+        const logInt = setInterval(() => {
+            if(i < items.length) {
+                log.innerHTML += `<div><span style="color:red">></span> ${items[i]}</div>`;
+                log.scrollTop = log.scrollHeight; i++;
+            }
+        }, 800);
+
+        // PROGRESO Y TIEMPOS
+        let width = 0;
+        const bar = document.getElementById("myBar");
+        const progInterval = setInterval(() => {
+            if (width >= 100) {
+                clearInterval(progInterval);
+                bar.innerHTML = "EXTRACCIÓN EXITOSA. ENCRIPTANDO...";
+                
+                // 5 SEGUNDOS DE TENSIÓN FINAL
+                setTimeout(() => {
+                    document.getElementById('danger-header').style.display = 'none';
+                    document.getElementById('extraction-log').style.display = 'none';
+                    document.getElementById('p-container').style.display = 'none';
+                    document.getElementById('box').style.borderColor = '#0F0';
+                    document.getElementById('box').style.boxShadow = '0 0 50px #0F0';
+                    document.getElementById('broma-content').style.display = 'block';
+                    window.onbeforeunload = null; 
+                }, 5000); 
+
+            } else {
+                width++;
+                bar.style.width = width + "%";
+                bar.innerHTML = "PROGRESO: " + width + "%";
+            }
+        }, 130); 
+
+        window.onbeforeunload = function() { return "PROCESO EN CURSO: Si sales ahora perderás tus fondos de Yape/Plin."; };
+        alert("¡PARA INGRESAR AL BANCO FAKE DALE CLIC EN ACEPTAR.");
+    </script>
+</body>
+</html>
